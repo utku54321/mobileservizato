@@ -1,0 +1,96 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "base": {
+      "env": {
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "customer-preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_VARIANT": "customer",
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "partner-preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_VARIANT": "partner",
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "ops-preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_VARIANT": "ops",
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "customer": {
+      "extends": "base",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "APP_VARIANT": "customer",
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "partner": {
+      "extends": "base",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "APP_VARIANT": "partner",
+        "API_URL": "https://servizato.in"
+      }
+    },
+    "ops": {
+      "extends": "base",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "APP_VARIANT": "ops",
+        "API_URL": "https://servizato.in"
+      }
+    }
+  },
+  "submit": {
+    "customer": {
+      "android": {
+        "track": "internal"
+      }
+    },
+    "partner": {
+      "android": {
+        "track": "internal"
+      }
+    },
+    "ops": {
+      "android": {
+        "track": "internal"
+      }
+    }
+  }
+}
