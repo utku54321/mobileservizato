@@ -1,0 +1,67 @@
+# Builds the three Servizato test APKs on GitHub's servers.
+# Run it from the repo's "Actions" tab (Build test APKs -> Run workflow),
+# or it runs by itself on every push to main.
+# Download the APKs from the finished run's "Artifacts" section.
+#
+# These APKs are signed with a test (debug) key: fine for installing on
+# your own phones, NOT for uploading to Google Play (use EAS for that).
+
+name: Build test APKs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.variant }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [customer, partner, ops]
+    env:
+      APP_VARIANT: ${{ matrix.variant }}
+      API_URL: https://servizato.in
+      EXPO_NO_TELEMETRY: "1"
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Build APK
+        working-directory: android
+        # arm64 only: covers practically every Android phone and halves build time.
+        run: ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
+
+      - name: Rename APK
+        run: mv android/app/build/outputs/apk/release/app-release.apk servizato-${{ matrix.variant }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: servizato-${{ matrix.variant }}-apk
+          path: servizato-${{ matrix.variant }}.apk
+          retention-days: 30
